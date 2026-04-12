@@ -16,16 +16,6 @@ This project demonstrates **advanced AI engineering** through a complete VLM fin
 - Processes complex document structures (seals, stamps, signatures, tables, charts)
 - Handles **bilingual content** (Arabic primary, English/French secondary)
 
-### 🚀 Real-World Impact
-
-- **Cost Reduction**: 10x cheaper inference (Gemma vs Gemini)
-- **Privacy**: Local deployment for sensitive documents
-- **Speed**: Faster inference with smaller models
-- **Accuracy**: Maintains 85%+ accuracy through distillation
-- **Scalability**: Processes 1000+ pages/hour
-
----
-
 ## 🏗️ System Architecture
 
 ```
@@ -73,7 +63,6 @@ This project demonstrates **advanced AI engineering** through a complete VLM fin
 
 ---
 
-## ✨ Key Features
 
 ### 🧠 Advanced Document Understanding
 
@@ -92,18 +81,7 @@ This project demonstrates **advanced AI engineering** through a complete VLM fin
 | **Attachments** | Referenced documents, attachments mentioned | Completeness checking |
 | **Quality Metrics** | Confidence, uncertain elements, review flags | Quality assurance |
 
-### 🔧 Technical Highlights
-
-- **Bilingual Processing**: Arabic primary + English/French support
-- **Original Script Preservation**: Never transliterates Arabic names/titles
-- **Dual Calendar Support**: Hijri & Gregorian date extraction
-- **Complex Layout Handling**: Tables, charts, multi-column layouts
-- **Quality Filtering**: Confidence scores & manual review flagging
-- **Cost Optimization**: Knowledge distillation reduces inference cost by 10x
-
 ---
-
-## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -119,9 +97,6 @@ API Keys:
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/arabic-ocr-finetuning.git
-cd arabic-ocr-finetuning
 
 # Install dependencies
 pip install -r requirements.txt
@@ -279,29 +254,6 @@ learning_rate: 5.0e-5
 
 ---
 
-## 🎓 Advanced Concepts Demonstrated
-
-### 1. Knowledge Distillation Pipeline
-
-```python
-# Teacher (Large Cloud Model)
-teacher_model = "gemini-3-flash-preview"
-teacher_output = teacher_model.extract(document)
-
-# Student (Smaller Local Model)
-student_model = "gemma-3-4b-it"
-student_model.finetune(
-    inputs=documents,
-    labels=teacher_output  # Learn from teacher
-)
-```
-
-**Benefits**:
-- Student learns from teacher's reasoning
-- Maintains 85%+ of teacher's performance
-- 10x faster inference
-- 10x lower cost
-
 ### 2. LoRA Fine-Tuning
 
 ```python
@@ -355,195 +307,5 @@ def preprocessing_images(image, max_width=600):
 ```
 
 **Impact**: 3x faster processing, 40% better OCR accuracy on low-quality scans
-
----
-
-## 📈 Performance Metrics
-
-### Benchmark Results
-
-| Model | Accuracy | Speed (pages/min) | Cost per 1K pages | Model Size |
-|-------|----------|-------------------|-------------------|------------|
-| **Gemini 3 Flash** (Teacher) | 92% | 20 | $15.00 | Cloud API |
-| **Gemma 3 4B + LoRA** (Student) | 87% | 60 | $1.50 | 4GB |
-| **Baseline OCR** | 45% | 120 | $0.10 | - |
-
-### Knowledge Distillation Efficiency
-
-- **Distillation Cost**: ~$50 for 1000 training samples
-- **Training Time**: 2-3 hours on V100 GPU
-- **Deployment**: Single GPU server (4GB VRAM)
-- **ROI**: Break-even at 3,333 pages processed
-
----
-
-## 🛠️ Project Structure
-
-```
-arabic-ocr-finetuning/
-├── data/
-│   ├── downloaded_pdfs/          # Input PDF files
-│   ├── pdf_images/                # Preprocessed images
-│   ├── ocr-image-sft.jsonl       # Teacher model outputs
-│   └── datasets/
-│       └── llamafactory-ocr-finetune-data/
-│           ├── train-v1.json
-│           └── val-v1.json
-│
-├── LlamaFactory/                  # Fine-tuning framework
-│   ├── examples/train_lora/
-│   │   └── OCR_file_tuning.yaml
-│   └── data/
-│       └── dataset_info.json
-│
-├── checkpoints/                   # Saved model checkpoints
-│   └── ocr-gemma-lora/
-│
-├── ocr_finetuning.py             # Main pipeline
-├── requirements.txt
-├── README.md
-└── .env.example
-```
-
----
-
-## 🔬 Technical Deep Dive
-
-### Extraction Prompt Engineering
-
-The system uses a **737-line structured prompt** that:
-
-1. **Defines 10+ JSON schemas** with strict enumerations
-2. **Provides extraction rules** (original script preservation)
-3. **Handles edge cases** (dual calendars, bilingual content)
-4. **Includes quality metrics** (confidence, review flags)
-
-**Key Prompt Sections:**
-```python
-prompt = """
-# Document Analysis & Extraction Prompt
-
-## Output Format
-{
-  "document_classification": {...},
-  "source": {...},
-  "physical_properties": {...},
-  "official_marks": {...},
-  "signatures_authorization": {...},
-  "routing_distribution": {...},
-  "content": {...},
-  "structural_elements": {...},
-  "attachments_references": {...},
-  "confidence_quality": {...}
-}
-
-## Critical Rules
-1. ORIGINAL SCRIPT: Never transliterate Arabic
-2. Dual Calendars: Extract Hijri & Gregorian separately
-3. Official Marks: Detailed seal/stamp descriptions
-...
-"""
-```
-
-### Cost Optimization Strategy
-
-**Phase 1: Development (Teacher Model)**
-```python
-# Gemini 3 Flash pricing
-price_per_1m_input = $0.50
-price_per_1m_output = $3.00
-
-# For 1000 pages (~500K input + 2M output tokens)
-development_cost = (0.5 * 0.5) + (2 * 3.0) = $6.25
-```
-
-**Phase 2: Production (Student Model)**
-```python
-# Gemma 3 4B local inference
-cost_per_1k_pages = $1.50 (GPU amortization)
-
-# Break-even at: $6.25 / ($15 - $1.50) ≈ 463 pages
-```
-
----
-
-## 🎯 Use Cases
-
-### Government & Legal
-- **Automated document classification** for archives
-- **Metadata extraction** from historical documents
-- **Seal/stamp verification** for authenticity
-- **Approval chain tracking** for workflow automation
-
-### Business Applications
-- **Invoice processing** with Arabic text
-- **Contract analysis** (bilingual documents)
-- **Regulatory compliance** document parsing
-- **Archive digitization** with structured output
-
-### Research Applications
-- **Historical document analysis**
-- **Comparative legal studies** (Arabic regulations)
-- **Government transparency** data extraction
-- **Digital humanities** corpus creation
-
----
-
-## 🚧 Future Enhancements
-
-### Planned Features
-- [ ] **Multi-page context**: Process entire documents (not just single pages)
-- [ ] **Table extraction**: Dedicated model for complex tables
-- [ ] **Handwriting recognition**: Fine-tune on handwritten annotations
-- [ ] **Real-time API**: FastAPI deployment with streaming
-- [ ] **Active learning**: Human-in-the-loop for edge cases
-- [ ] **Quantization**: INT4 quantization for mobile deployment
-
-### Research Directions
-- Fine-tune on domain-specific documents (medical, financial)
-- Experiment with larger models (Gemma 7B, Qwen-VL)
-- Multi-modal fusion (text + layout + visual features)
-- Zero-shot generalization to new document types
-
----
-
-## 📚 Dependencies
-
-### Core Libraries
-```
-torch==2.8.0
-torchvision==0.23
-transformers
-accelerate
-peft  # For LoRA
-```
-
-### Document Processing
-```
-pdf2image
-pillow
-poppler-utils
-```
-
-### LLM & APIs
-```
-litellm
-openai  # For OpenRouter compatibility
-huggingface-hub
-```
-
-### Training Infrastructure
-```
-llamafactory  # LoRA fine-tuning
-wandb  # Experiment tracking
-optimum  # Model optimization
-```
-
-### Utilities
-```
-json-repair  # Robust JSON parsing
-tqdm  # Progress bars
-pyyaml  # Config files
-```
 
 ---
