@@ -1,0 +1,46 @@
+# Core Deep Learning
+torch==2.8.0
+torchvision==0.23
+torchaudio==2.8.0
+transformers>=4.36.0
+accelerate>=0.25.0
+peft>=0.7.0  # For LoRA
+
+# Document Processing
+pdf2image>=1.16.0
+pillow>=10.0.0
+# poppler-utils (install via system package manager)
+
+# LLM Integration
+litellm>=1.0.0
+openai>=1.0.0  # For OpenRouter compatibility
+huggingface-hub>=0.19.0
+
+# Fine-Tuning Framework
+# Install LlamaFactory separately:
+# git clone https://github.com/hiyouga/LLaMA-Factory.git
+# cd LLaMA-Factory && pip install -e .
+
+# Experiment Tracking
+wandb>=0.16.0
+
+# Model Optimization
+optimum>=1.16.0
+bitsandbytes>=0.41.0  # For quantization
+
+# Utilities
+json-repair>=0.7.0
+tqdm>=4.66.0
+pyyaml>=6.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+datasets>=2.14.0
+
+# Development
+jupyter>=1.0.0
+ipython>=8.12.0
+pytest>=7.4.0
+
+# Optional: Colab-specific
+# google-colab
+# colab-xterm
