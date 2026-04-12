@@ -1,4 +1,4 @@
-# 🔍 Arabic Document OCR Fine-Tuning with Knowledge Distillation
+# Arabic Document OCR Fine-Tuning with Knowledge Distillation
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.8.0-red.svg)](https://pytorch.org/)
@@ -7,7 +7,7 @@
 
 > **A production-grade pipeline for fine-tuning Vision-Language Models (VLMs) on Arabic document understanding using knowledge distillation from large cloud models to efficient local models.**
 
-## 🎯 Project Overview
+## Project Overview
 
 This project demonstrates **advanced AI engineering** through a complete VLM fine-tuning pipeline that:
 - Extracts structured data from Arabic government/legal documents
@@ -16,7 +16,7 @@ This project demonstrates **advanced AI engineering** through a complete VLM fin
 - Processes complex document structures (seals, stamps, signatures, tables, charts)
 - Handles **bilingual content** (Arabic primary, English/French secondary)
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -64,7 +64,7 @@ This project demonstrates **advanced AI engineering** through a complete VLM fin
 ---
 
 
-### 🧠 Advanced Document Understanding
+### Advanced Document Understanding
 
 **Extracts 10+ Structured Categories:**
 
@@ -220,7 +220,7 @@ learning_rate: 5.0e-5
 
 ---
 
-## 📊 Dataset Structure
+## Dataset Structure
 
 ### Input Format (Teacher Model Output)
 
