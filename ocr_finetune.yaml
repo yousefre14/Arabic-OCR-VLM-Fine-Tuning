@@ -1,0 +1,52 @@
+### model
+model_name_or_path: google/gemma-3-4b-it
+use_fast_tokenizer: false
+cache_dir: /workspace/cache
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 96
+lora_target: all
+
+### dataset
+dataset: ocr_finetune_train
+eval_dataset: ocr_finetune_val
+template: gemma3
+cutoff_len: 12000
+# max_samples: 50
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+resume_from_checkpoint: /workspace/ocr-models-gemma-3-4b-it/checkpoint-100
+output_dir: /workspace/ocr-models-gemma-3-4b-it/
+logging_steps: 25
+save_steps: 50
+plot_loss: true
+# overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 20.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+### eval
+# val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 50
+
+report_to: wandb
+run_name: yt-ocr-finetune-llamafactory
+
+# push_to_hub: true
+# hub_private_repo: true
+# hub_strategy: checkpoint
