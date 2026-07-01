@@ -11,6 +11,8 @@ from litellm import completion
 from preprocessing import image_to_base64_data_uri
 import torch
 from transformers import AutoProcessor, Gemma3ForConditionalGeneration
+from peft import PeftModel
+
 
 
 
@@ -77,7 +79,7 @@ class LiteLLMClient(BaseLLMClient):
 class HuggingFaceClient(BaseLLMClient):
     """Runs a local Gemma-3 vision model via transformers."""
 
-    def __init__(self, model_id: str) -> None:
+    def __init__(self, model_id: str, adapter_path: str | None = None) -> None:
      
         self.model_id = model_id
         self._processor = AutoProcessor.from_pretrained(model_id)
@@ -85,6 +87,9 @@ class HuggingFaceClient(BaseLLMClient):
             model_id, dtype="auto", device_map="auto"
         ).eval()
         self._torch = torch
+        if adapter_path:
+            self._model = PeftModel.from_pretrained(self._model, adapter_path)
+            logger.info("LoRA adapter loaded from %s", adapter_path)
 
     def complete(self, image_path: str | Path, prompt: str, max_tokens: int) -> LLMResponse:
         messages: list[dict[str, Any]] = [

@@ -8,13 +8,13 @@ import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
-
 from fastapi import FastAPI, File, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-
-# Internal imports
 import sys
+import io
+from fastapi import UploadFile as FU
+from starlette.datastructures import UploadFile as StarletteUpload
 sys.path.insert(0, str(Path(__file__).parent.parent)) 
 
 from config import AppConfig
@@ -25,10 +25,6 @@ from prompts import task_1_message, task_2_message, prompt
 logger = logging.getLogger(__name__)
 
 # 1. APPLICATION STATE
-#    The model is expensive to load (several seconds + VRAM allocation).
-#    We load it once at startup into a module-level container and reuse
-#    it across all requests — this is the single most important
-#    performance decision in a model-serving API.
 
 class _AppState:
     client: HuggingFaceClient | None = None
@@ -43,9 +39,6 @@ async def lifespan(app: FastAPI):
     """
     FastAPI lifespan handler: runs setup before the server accepts requests,
     and teardown when it shuts down.
-
-    Why lifespan instead of @app.on_event("startup")?
-    on_event is deprecated in newer FastAPI. lifespan is the current pattern.
     """
     # ── STARTUP ───────────────────────────────────────────────────────────────
     logger.info("Loading config...")
@@ -60,11 +53,9 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning(
             "ADAPTER_PATH not set — running base model without LoRA adapter. "
-            "Set ADAPTER_PATH in .env to serve the fine-tuned model."
         )
 
     # HuggingFaceClient needs a small extension to accept adapter_path —
-    # see the NOTE at the bottom of this file for the one-line change needed.
     _state.client = HuggingFaceClient(model_id, adapter_path=adapter_path)
     logger.info("Model loaded and ready.")
 
@@ -75,12 +66,8 @@ async def lifespan(app: FastAPI):
     _state.client = None
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # 2. PYDANTIC RESPONSE MODELS
-#    Pydantic models document your API contract and give callers
-#    typed, validated responses. They also appear in /docs automatically.
-# ─────────────────────────────────────────────────────────────────────────────
-
+#    Pydantic models document API contract and give callers
 class HealthResponse(BaseModel):
     status: str = Field(..., examples=["ok"])
     model_id: str
@@ -90,8 +77,6 @@ class HealthResponse(BaseModel):
 class ExtractionResponse(BaseModel):
     """
     Wraps the raw structured JSON from the model with metadata.
-    `data` is the full parsed extraction dict — its schema matches
-    the 10-category structure defined in prompts.py.
     """
     task: str = Field(..., description="Which task was run: 'content', 'metadata', or 'full'")
     model_id: str
@@ -106,10 +91,7 @@ class ExtractionResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
 
-
-# ─────────────────────────────────────────────────────────────────────────────
 # 3. FASTAPI APP
-# ─────────────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
     title="Arabic OCR VLM API",
@@ -120,11 +102,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # 4. SHARED HELPER
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _run_extraction(
     image_file: UploadFile,
@@ -192,10 +170,7 @@ def _run_extraction(
         raw_output=response.content,
     )
 
-
-# ─────────────────────────────────────────────────────────────────────────────
 # 5. ENDPOINTS
-# ─────────────────────────────────────────────────────────────────────────────
 
 @app.get(
     "/health",
@@ -290,10 +265,6 @@ async def extract_full(
     # Read the file once, then rewind for the second call
     file_bytes = await file.read()
 
-    import io
-    from fastapi import UploadFile as FU
-    from starlette.datastructures import UploadFile as StarletteUpload
-
     def _make_upload(data: bytes, filename: str, content_type: str) -> UploadFile:
         return UploadFile(
             filename=filename,
@@ -318,26 +289,3 @@ async def extract_full(
     )
 
     return {"content": content_result, "metadata": metadata_result}
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# NOTE: ONE CHANGE NEEDED IN llm_client.py
-# ─────────────────────────────────────────────────────────────────────────────
-#
-# HuggingFaceClient.__init__ currently only accepts model_id.
-# To support loading the LoRA adapter at inference time, add adapter_path:
-#
-#   class HuggingFaceClient(BaseLLMClient):
-#       def __init__(self, model_id: str, adapter_path: str | None = None) -> None:
-#           ...
-#           self._model = Gemma3ForConditionalGeneration.from_pretrained(
-#               model_id, dtype="auto", device_map="auto"
-#           ).eval()
-#
-#           if adapter_path:
-#               from peft import PeftModel
-#               self._model = PeftModel.from_pretrained(self._model, adapter_path)
-#               logger.info("LoRA adapter loaded from %s", adapter_path)
-#
-# That's the only change to existing files this API requires.
-# ─────────────────────────────────────────────────────────────────────────────

@@ -259,8 +259,6 @@ def train(cfg: UnslothTrainingConfig | None = None) -> None:
 
     # ── Save adapter ──────────────────────────────────────────────────────────
     # save_pretrained saves ONLY the LoRA adapter weights (small, ~50-100MB),
-    # not the full 4B base model. The base model is loaded separately at inference time
-    # and the adapter is layered on top
     adapter_path = Path(cfg.output_dir) / "lora-adapter"
     model.save_pretrained(str(adapter_path))
     processor.save_pretrained(str(adapter_path))
@@ -274,4 +272,4 @@ if __name__ == "__main__":
         format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
-    
+

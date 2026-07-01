@@ -1,52 +1,41 @@
-# Core Deep Learning
-torch==2.8.0
-torchvision==0.23
-torchaudio==2.8.0
-transformers>=4.36.0
-accelerate>=0.25.0
-peft>=0.7.0  # For LoRA
+
+torch==2.5.1 
+POPPLER 
+transformers>=4.50.0
+accelerate>=0.34.0
+peft>=0.13.0                
+trl>=0.13.0                
+bitsandbytes>=0.44.0        
+datasets>=2.20.0            
 unsloth
-sentencepiece protobuf "datasets==4.3.0" "huggingface_hub>=0.34.0" hf_transfer
-torchao>=0.16.0
-unsloth_zoo bitsandbytes accelerate {xformers} peft trl triton unsloth
-trl==0.22.2
 
-# Document Processing
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0   
+python-multipart>=0.0.9     
+
 pdf2image>=1.16.0
-pillow>=10.0.0
-# poppler-utils (install via system package manager)
+Pillow>=10.0.0
 
-# LLM Integration
+
 litellm>=1.0.0
-openai>=1.0.0  # For OpenRouter compatibility
-huggingface-hub>=0.19.0
-fastapi
+openai>=1.0.0               
 
-# Fine-Tuning Framework
-# Install LlamaFactory separately:
-# git clone https://github.com/hiyouga/LLaMA-Factory.git
-# cd LLaMA-Factory && pip install -e .
+wandb>=0.17.0
 
-# Experiment Tracking
-wandb>=0.16.0
-
-# Model Optimization
-optimum>=1.16.0
-bitsandbytes>=0.41.0  # For quantization
-
-# Utilities
-json-repair>=0.7.0
+json-repair>=0.7.0          
 tqdm>=4.66.0
 pyyaml>=6.0
+python-dotenv>=1.0.0        
 numpy>=1.24.0
-matplotlib>=3.7.0
-datasets>=2.14.0
 
-# Development
-jupyter>=1.0.0
-ipython>=8.12.0
+optimum>=1.16.0             
+huggingface-hub>=0.24.0
+
+
 pytest>=7.4.0
+ipython>=8.12.0
 
-# Optional: Colab-specific
-# google-colab
-# colab-xterm
+# LLAMAFACTORY 
+#   Not pip-installable — install separately:
+#     git clone https://github.com/hiyouga/LLaMA-Factory.git
+#     cd LLaMA-Factory && pip install -e .
