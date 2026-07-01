@@ -40,12 +40,12 @@ async def lifespan(app: FastAPI):
     FastAPI lifespan handler: runs setup before the server accepts requests,
     and teardown when it shuts down.
     """
-    # ── STARTUP ───────────────────────────────────────────────────────────────
+    # ── STARTUP 
     logger.info("Loading config...")
     _state.cfg = AppConfig.load()
 
     model_id = _state.cfg.model.local_model_id
-    adapter_path = os.environ.get("ADAPTER_PATH")   # optional LoRA adapter
+    adapter_path = os.environ.get("ADAPTER_PATH") 
 
     logger.info("Loading model: %s", model_id)
     if adapter_path:
@@ -61,13 +61,12 @@ async def lifespan(app: FastAPI):
 
     yield  # server is live here
 
-    # ── SHUTDOWN ──────────────────────────────────────────────────────────────
+    # ── SHUTDOWN
     logger.info("Shutting down — releasing model from memory.")
     _state.client = None
 
 
 # 2. PYDANTIC RESPONSE MODELS
-#    Pydantic models document API contract and give callers
 class HealthResponse(BaseModel):
     status: str = Field(..., examples=["ok"])
     model_id: str
@@ -258,9 +257,6 @@ async def extract_full(
     """
     Runs both Task 1 and Task 2 sequentially on the same image.
     Returns `{"content": ..., "metadata": ...}` with both results.
-
-    Note: This makes two model inference calls. For high-throughput workloads,
-    call /extract/content and /extract/metadata independently in parallel.
     """
     # Read the file once, then rewind for the second call
     file_bytes = await file.read()
